@@ -76,6 +76,8 @@ steps:
   displayName: 'build src'
 
 - powershell: |
+    Set-PSDebug -Trace 1
+
     $dumpbin = vswhere -latest -requires Microsoft.Component.MSBuild -find **\dumpbin.exe | select-object -first 1
     & $dumpbin /dependents py_file_run.exe
 

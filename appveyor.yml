@@ -31,6 +31,7 @@ build_script:
 
 test_script:
   - ps: |
+      Set-PSDebug -Trace 1
       pushd .\src
 
       get-command api-ms-win-core-synch-l1-2-0.dll | Format-List *
