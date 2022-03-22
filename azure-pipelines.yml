@@ -75,6 +75,10 @@ steps:
 - powershell: python src
   displayName: 'build src'
 
+- powershell: ./procdump-on-crash.ps1
+  displayName: 'setup procdump on crash'
+  workingDirectory: scripts
+
 - powershell: |
     Set-PSDebug -Trace 1
 
@@ -88,3 +92,7 @@ steps:
     ./py_file_run.exe $(python.pythonLocation) .\test.py
   displayName: 'test'
   workingDirectory: src
+
+- powershell: ls ; cat *
+  displayName: 'show dump files'
+  workingDirectory: c:/dumps
