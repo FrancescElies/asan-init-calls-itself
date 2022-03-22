@@ -36,15 +36,15 @@ clang_rt_asan_cxx_x86_64_lib = find_visualstudio_clang_rt("clang_rt.asan_cxx-x86
 
 cflags_base = " ".join((
     "--target=x86_64-pc-windows-msvc",
-    "-fuse-ld=lld",
-    "-Wno-cast-align",
-    "-fcomment-block-commands=retval",
-    "-ferror-limit=200",
-    "-fmessage-length=0",
-    "-fno-short-enums",
-    "-ffunction-sections",
-    "-fdata-sections",
-    "-std=c99",
+    # "-fuse-ld=lld",
+    # "-Wno-cast-align",
+    # "-fcomment-block-commands=retval",
+    # "-ferror-limit=200",
+    # "-fmessage-length=0",
+    # "-fno-short-enums",
+    # "-ffunction-sections",
+    # "-fdata-sections",
+    # "-std=c99",
 ))
 strict_flags = "-Weverything -Werror -pedantic-errors"
 
