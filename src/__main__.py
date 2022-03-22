@@ -1,16 +1,38 @@
 from pathlib import Path
 import sys
 from subprocess import check_output, run
+import os
 
 file_path = Path(__file__).absolute()
 file_directory = file_path.parent
 cwd = file_directory
 
+def get_visualstudio_path():
+    program_files = os.getenv("ProgramFiles(x86)")
+    vswhere = fr"{program_files}\Microsoft Visual Studio\Installer\vswhere.exe"
+    result = check_output((f'"{vswhere}" -latest -property installationPath'))
+    return Path( result.decode(errors="ignore").strip())
+
+visualstudio_path = get_visualstudio_path()
+def find_visualstudio_clang_rt(libname):
+    libpath = next(visualstudio_path.rglob(libname))
+    assert libpath.exists(), f"{libpath} not found"
+    print(f"Found {libpath}")
+    return libpath
+
+clang_rt_libs = {x.name: x for x in visualstudio_path.rglob("*clang*.lib")}
 llvm_path = Path(
     check_output("where clang").decode().splitlines()[0].strip()).parent.parent
-clang_windows = llvm_path / "lib/clang/13.0.0/lib/windows"
-clang_rt_asan_thunk_lib = clang_windows / "clang_rt.asan_dll_thunk-x86_64.lib"
-assert clang_rt_asan_thunk_lib.exists(), f"{clang_rt_asan_thunk_lib} not found"
+
+def find_llvm_clang_rt(libname):
+    libpath = next((llvm_path / "lib/clang/13.0.0/lib/windows").rglob(libname))
+    assert libpath.exists(), f"{libpath} not found"
+    print(f"Found {libpath}")
+    return libpath
+
+clang_rt_asan_thunk_lib = find_visualstudio_clang_rt("clang_rt.asan_dll_thunk-x86_64.lib")
+clang_rt_asan_x86_64_lib = find_visualstudio_clang_rt("clang_rt.asan-x86_64.lib")
+clang_rt_asan_cxx_x86_64_lib = find_visualstudio_clang_rt("clang_rt.asan_cxx-x86_64.lib")
 
 cflags_base = " ".join((
     "--target=x86_64-pc-windows-msvc",
@@ -32,8 +54,9 @@ lib_cflags = " ".join((cflags_base, cflags_windows))
 
 cc = llvm_path / 'bin/clang.exe'
 
+ # Intentionally no using -fsanitize=address we link asan .lib manually
 assan_flags = " ".join(("-g", "-gdwarf-4", "-O0", "-fno-omit-frame-pointer",
-                        "-fno-optimize-sibling-calls", "-fsanitize=address"))
+                        "-fno-optimize-sibling-calls"))
 
 link_flags = ",".join([
     "-Wl",  # -Wl,<arg>               Pass the comma separated arguments in <arg> to the linker
@@ -67,8 +90,8 @@ execute(cmd, cwd)
 py_file_run_c = "py_file_run.c"
 
 clang_rt_asan_libs = (
-    clang_windows / "clang_rt.asan-x86_64.lib",
-    clang_windows / "clang_rt.asan_cxx-x86_64.lib",
+    clang_rt_asan_x86_64_lib,
+    clang_rt_asan_cxx_x86_64_lib,
 )
 assert all(x.exists() for x in clang_rt_asan_libs), (
     f"{[x for x in clang_rt_asan_libs if not x.exists()]} not found")
