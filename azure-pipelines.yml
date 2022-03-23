@@ -63,6 +63,9 @@ steps:
   displayName: 'test'
   workingDirectory: src
 
+- powershell: sleep 5
+  displayName: 'sleep'
+
 - publish: c:/dumps
   displayName: "core dumps"
   artifact: core-dumps
