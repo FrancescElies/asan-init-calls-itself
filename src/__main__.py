@@ -58,8 +58,8 @@ cc = llvm_path / 'bin/clang.exe'
 
  # Intentionally no using -fsanitize=address we link asan .lib manually
 assan_flags = " ".join((
-    # "-g",
-    # "-gdwarf-4",
+    "-g",
+    "-gdwarf-4",
     "-O0",
     "-fno-omit-frame-pointer",
     "-fno-optimize-sibling-calls",
