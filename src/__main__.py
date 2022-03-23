@@ -57,8 +57,13 @@ lib_cflags = " ".join((cflags_base, cflags_windows))
 cc = llvm_path / 'bin/clang.exe'
 
  # Intentionally no using -fsanitize=address we link asan .lib manually
-assan_flags = " ".join(("-g", "-gdwarf-4", "-O0", "-fno-omit-frame-pointer",
-                        "-fno-optimize-sibling-calls"))
+assan_flags = " ".join((
+    # "-g",
+    # "-gdwarf-4",
+    "-O0",
+    "-fno-omit-frame-pointer",
+    "-fno-optimize-sibling-calls",
+))
 
 link_flags = ",".join([
     "-Wl",  # -Wl,<arg>               Pass the comma separated arguments in <arg> to the linker
