@@ -14,10 +14,11 @@ def get_visualstudio_path():
     return Path( result.decode(errors="ignore").strip())
 
 visualstudio_path = get_visualstudio_path()
-def find_visualstudio_clang_rt(libname):
-    libpath = next(visualstudio_path.rglob(libname))
-    assert libpath.exists(), f"{libpath} not found"
-    print(f"Found {libpath}")
+
+def find_msvc_clang_rt(libname):
+    libpaths = list(visualstudio_path.rglob(libname))
+    libpath = next(x for x in libpaths if "MSVC" in str(x))
+    print(f"Selected {libpath=}")
     return libpath
 
 clang_rt_libs = {x.name: x for x in visualstudio_path.rglob("*clang*.lib")}
@@ -30,9 +31,9 @@ def find_llvm_clang_rt(libname):
     print(f"Found {libpath}")
     return libpath
 
-clang_rt_asan_thunk_lib = find_visualstudio_clang_rt("clang_rt.asan_dll_thunk-x86_64.lib")
-clang_rt_asan_x86_64_lib = find_visualstudio_clang_rt("clang_rt.asan-x86_64.lib")
-clang_rt_asan_cxx_x86_64_lib = find_visualstudio_clang_rt("clang_rt.asan_cxx-x86_64.lib")
+clang_rt_asan_thunk_lib = find_msvc_clang_rt("clang_rt.asan_dll_thunk-x86_64.lib")
+clang_rt_asan_x86_64_lib = find_msvc_clang_rt("clang_rt.asan-x86_64.lib")
+clang_rt_asan_cxx_x86_64_lib = find_msvc_clang_rt("clang_rt.asan_cxx-x86_64.lib")
 
 cflags_base = " ".join((
     "--target=x86_64-pc-windows-msvc",
