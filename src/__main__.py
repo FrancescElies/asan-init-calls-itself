@@ -62,7 +62,7 @@ assan_flags = " ".join(("-g", "-gdwarf-4", "-O0", "-fno-omit-frame-pointer",
 link_flags = ",".join([
     "-Wl",  # -Wl,<arg>               Pass the comma separated arguments in <arg> to the linker
     # lld-link --help to see possibilities
-    "/ignore:longsections",
+    # "/ignore:longsections",
     "/WX",  # Treat warnings as errors
 ])
 sources = "mylib.c"
