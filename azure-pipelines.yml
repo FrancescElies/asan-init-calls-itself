@@ -14,27 +14,12 @@ steps:
     & "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property catalog_productDisplayVersion
   displayName: 'Visual Studio version'
 
-# - task: Cache@2
-#   inputs:
-#     key: '"llvm13-cachev1" | "$(Agent.OS)"'
-#     restoreKeys: '"llvm13-cachev1" | "$(Agent.OS)"'
-#     path: $(Pipeline.Workspace)/llvm
-#     cacheHitVar: CACHE_RESTORED
-#   displayName: 'cache llvm installation'
-
 - powershell: |
     choco uninstall --yes --all-versions llvm
   displayName: 'uninstall system llvm'
 
-- powershell: |
-    write-host Downloading llvm
-    curl https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/LLVM-13.0.0-win64.exe -o llvm.exe
-    write-host Extracting llvm
-    7z x llvm.exe -ollvm
-  displayName: 'install llvm 13'
-  workingDirectory: $(Pipeline.Workspace)
-  # condition: and(succeededOrFailed(),
-  #                ne(variables.CACHE_RESTORED, 'true'))
+- powershell: ./scripts/get-binaries.ps1
+  displayName: 'get bin (llvm13, fd, procdump)'
 
 - powershell: |
     Write-Host Prepending $env:llvm_bin_path to PATH
@@ -43,25 +28,9 @@ steps:
     Write-Host Prepending $env:llvm_lib_windows to PATH
     Write-Host "##vso[task.prependpath]$env:llvm_lib_windows"
   displayName: 'set PATH'
-  workingDirectory: $(Pipeline.Workspace)
   env:
-    llvm_bin_path: $(Pipeline.Workspace)\llvm\bin
-    llvm_lib_windows: $(Pipeline.Workspace)\llvm\lib\clang\13.0.0\lib\windows
-
-- powershell: |
-    write-host Downloading fd
-    Invoke-WebRequest https://github.com/sharkdp/fd/releases/download/v8.2.1/fd-v8.2.1-i686-pc-windows-msvc.zip -OutFile fd.zip
-    7z x fd.zip -o"C:\Windows"
-
-    write-host Finding files
-    fd.exe -HI clang_rt.asan_dynamic-x86_64.dll
-    fd.exe -HI clang_rt.asan_dll_thunk-x86_64.lib
-    fd.exe -HI clang_rt.asan-x86_64.lib
-    fd.exe -HI clang_rt.asan_cxx-x86_64.lib
-    fd.exe -HI clang.exe
-    get-command clang
-  workingDirectory: $(Pipeline.Workspace)
-  displayName: 'find files'
+    llvm_bin_path: $(Build.SourcesDirectory)\llvm\bin
+    llvm_lib_windows: $(Build.SourcesDirectory)\llvm\lib\clang\13.0.0\lib\windows
 
 - task: UsePythonVersion@0
   inputs:
