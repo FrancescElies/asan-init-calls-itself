@@ -14,9 +14,10 @@ steps:
     & "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property catalog_productDisplayVersion
   displayName: 'Visual Studio version'
 
-- powershell: |
-    choco uninstall --yes --all-versions llvm
-  displayName: 'uninstall system llvm'
+# Not needed
+# - powershell: |
+#     choco uninstall --yes --all-versions llvm
+#   displayName: 'uninstall system llvm'
 
 - powershell: ./scripts/get-binaries.ps1
   displayName: 'get bin (llvm13, fd, procdump)'
