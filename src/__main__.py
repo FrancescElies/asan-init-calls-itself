@@ -31,9 +31,10 @@ def find_llvm_clang_rt(libname):
     print(f"Found {libpath}")
     return libpath
 
-clang_rt_asan_thunk_lib = find_msvc_clang_rt("clang_rt.asan_dll_thunk-x86_64.lib")
-clang_rt_asan_x86_64_lib = find_msvc_clang_rt("clang_rt.asan-x86_64.lib")
-clang_rt_asan_cxx_x86_64_lib = find_msvc_clang_rt("clang_rt.asan_cxx-x86_64.lib")
+find_clang_rt = find_llvm_clang_rt
+clang_rt_asan_thunk_lib = find_clang_rt("clang_rt.asan_dll_thunk-x86_64.lib")
+clang_rt_asan_x86_64_lib = find_clang_rt("clang_rt.asan-x86_64.lib")
+clang_rt_asan_cxx_x86_64_lib = find_clang_rt("clang_rt.asan_cxx-x86_64.lib")
 
 cflags_base = " ".join((
     "--target=x86_64-pc-windows-msvc",
