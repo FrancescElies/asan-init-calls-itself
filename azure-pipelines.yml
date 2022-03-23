@@ -63,6 +63,6 @@ steps:
   displayName: 'test'
   workingDirectory: src
 
-- powershell: ls ; cat *
-  displayName: 'show dump files'
-  workingDirectory: c:/dumps
+- publish: c:/dumps
+  displayName: "core dumps"
+  artifact: core-dumps
